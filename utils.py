@@ -1,4 +1,3 @@
-from utils import get_data, PILtocv2
 from PIL import Image, ExifTags
 import face_recognition
 import numpy as np
@@ -6,6 +5,18 @@ import shutil
 import cv2
 import sys
 import os
+
+
+def PILtocv2(image_PIL):
+    """
+    Convert PIL Image Type to OpenCV Image Type
+    """
+    try:
+        image_PIL = image_PIL.save('image.jpg')
+    except:
+        image_PIL = image_PIL.convert('RGB')
+        image_PIL = image_PIL.save('image.jpg')
+    return cv2.imread('image.jpg')
 
 
 def encode_face(face_images):
@@ -58,8 +69,8 @@ def load_biometric_data():
     img_per_ppl = []
     names = []
 
-    for data in os.listdir('./biometric/temp_biometric_data'):
-        path = os.path.join('./biometric/temp_biometric_data',data)
+    for data in os.listdir('./biometrics'):
+        path = os.path.join('./biometrics',data)
 
         # append data and name of each image
         metric = np.load(path)

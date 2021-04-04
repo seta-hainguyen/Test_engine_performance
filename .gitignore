@@ -2,6 +2,8 @@
 __pycache__/
 .vscode/
 weights/
+box_faces/
+image.jpg
 *.py[cod]
 *$py.class
 
