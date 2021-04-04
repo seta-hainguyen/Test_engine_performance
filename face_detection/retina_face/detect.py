@@ -97,23 +97,33 @@ def get_model(network, use_cpu):
     """
     torch.set_grad_enabled(False)
     cfg = None
+    flag_use_torchscript = False
     if network == 'mobile0.25':
         cfg = cfg_mnet
         trained_model = 'face_detection/weights/mobilenet0.25_Final.pth'
     elif network == 'resnet50':
         cfg = cfg_re50
         trained_model = 'face_detection/weights/Resnet50_Final.pth'
+    elif network == 'traced_resnet50':
+        cfg = cfg_re50
+        flag_use_torchscript=True
+        trained_model = torch.jit.load('traced_resnet.pt')
+
 
     # net and model
-    try: 
-        net = RetinaFace(cfg=cfg, phase = 'test', use_cpu = use_cpu)
-        net = load_model(net, trained_model, use_cpu)
-    except:
-        download_pretrain(network)
-        net = RetinaFace(cfg=cfg, phase = 'test', use_cpu = use_cpu)
-        net = load_model(net, trained_model, use_cpu)
+    if not flag_use_torchscript:
+        try: 
+            net = RetinaFace(cfg=cfg, phase = 'test', use_cpu = use_cpu)
+            net = load_model(net, trained_model, use_cpu)
+        except:
+            download_pretrain(network)
+            net = RetinaFace(cfg=cfg, phase = 'test', use_cpu = use_cpu)
+            net = load_model(net, trained_model, use_cpu)
+        net.eval()
+    else:
+        net = trained_model
         
-    net.eval()
+    
     logger.info('Finished loading model!')
 
     cudnn.benchmark = True
@@ -138,9 +148,7 @@ def detect_face(net, image, device, cfg):
     img = img.to(device)
     scale = scale.to(device)
 
-    #tic = time.time()
     loc, conf, landms = net(img)  # forward pass
-    # logger.info('net forward time: {:.4f}'.format(time.time() - tic))
 
     priorbox = PriorBox(cfg, image_size=(im_height, im_width))
     priors = priorbox.forward()
@@ -157,7 +165,6 @@ def detect_face(net, image, device, cfg):
     scale1 = scale1.to(device)
     landms = landms * scale1 / resize
     landms = landms.cpu().numpy()
-
     # ignore low scores
     inds = np.where(scores > 0.02)[0]
     boxes = boxes[inds]

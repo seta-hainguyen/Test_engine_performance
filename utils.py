@@ -84,32 +84,32 @@ def load_biometric_data():
 
 
 def cam_predict(frame, name, detector, biometrics, names, face_confidence = 0.98, verify_confidence = 0.37):
-    os.mkdir('./box_faces/{}_box_faces'.format(name))
     locs, confs, faces = detector.predict(frame, face_confidence, True) 
-    print('{} len faces: '.format(name), len(faces))
+    # print('{} len faces: '.format(name), len(faces))
     # if len(faces) == 0:
     #     continue
 
-    print('{} number of boxes detected: '.format(name), len(faces))
+    # print('{} number of boxes detected: '.format(name), len(faces))
 
-    people_pred = []
+    # people_pred = []
     
     # # hande boxes
-    count = 0
-    save_faces = []
-    box_size = []
-    for (i, face) in enumerate(faces):
+    # count = 0
+    # save_faces = []
+    # box_size = []
+    # for (i, face) in enumerate(faces):
         # top, right, bottom, left = box
-        try:
-            box_width = locs[i][2] - locs[i][0]
-            box_height = locs[i][3] - locs[i][1]
-            cv2.imwrite(os.path.join('./box_faces/{}_box_faces'.format(name), "frame{}.jpg").format(i), faces[i])
-            save_faces.append(locs[i])
-            box_size.append([box_width, box_height])
-            count += 1
-        except:
-            print(i, faces[i])
-    print(f'{name} total images: ', count)
+        # try:
+        #     box_width = locs[i][2] - locs[i][0]
+        #     box_height = locs[i][3] - locs[i][1]
+        #     cv2.imwrite(os.path.join('./box_faces/{}_box_faces'.format(name), "frame{}.jpg").format(i), faces[i])
+        #     save_faces.append(locs[i])
+        #     box_size.append([box_width, box_height])
+        #     count += 1
+        # except:
+        #     print(i, faces[i])
+    # print(f'{name} total images: ', count)
+    return
     # print([os.path.join("/home/tung/AIC-POC/box_faces", data) for data in sorted(os.listdir("/home/tung/AIC-POC/box_faces"), key = lambda x: int(x.lstrip('frame').rstrip('.jpg')))])
     face_encodings = encode_face([os.path.join('./box_faces/{}_box_faces'.format(name), data) for data in sorted(os.listdir('./box_faces/{}_box_faces'.format(name)), key = lambda x: int(x.lstrip('frame').rstrip('.jpg')))])
     print('{} face_encodings: '.format(name), len(face_encodings))
