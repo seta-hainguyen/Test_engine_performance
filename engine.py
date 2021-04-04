@@ -10,7 +10,7 @@ import sys
 def parse_args():
     # Parse input arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument('--face_network', default='traced_resnet50', type=str, # mobile0.25 or resnet50
+    parser.add_argument('--face_network', default='resnet50', type=str, # mobile0.25 or resnet50
                         help='model which is used for detect faces')
     
     args = parser.parse_args()
